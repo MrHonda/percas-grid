@@ -1,0 +1,2 @@
+imports:
+  - { resource: '%current_working_dir%\\vendor\\symplify\\easy-coding-standard\\config\\set\\clean-code.yaml' }

@@ -1,0 +1,36 @@
+{
+  "name": "percas/grid",
+  "description": "Datagrid",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Percas\\Grid\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Percas\\Grid\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^7.2",
+    "ext-pdo": "*"
+  },
+  "require-dev": {
+    "mockery/mockery": "^1.2",
+    "phpmd/phpmd": "^2.7",
+    "phpstan/phpstan": "^0.11.19",
+    "phpunit/phpunit": "^8.4",
+    "symplify/easy-coding-standard": "^6.1"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "prefer-stable": true,
+  "minimum-stability": "dev",
+  "scripts": {
+    "phpstan": "vendor\\bin\\phpstan analyse src --level 7",
+    "ecs": "vendor\\bin\\ecs check src tests --fix"
+  }
+}
