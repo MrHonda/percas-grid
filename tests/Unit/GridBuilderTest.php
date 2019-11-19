@@ -16,16 +16,6 @@ use Percas\Grid\Row;
 
 class GridBuilderTest extends AbstractTestCase
 {
-    public function testSimpleGridDefinition(): void
-    {
-        $builder = $this->createGridBuilder();
-        $builder->addTextColumn('name', 'name');
-        $builder->addTextColumn('nickname', 'nickname');
-        $builder->addTextColumn('number', 'number');
-
-        $this->assertEquals($this->createSampleGrid(), $builder->build());
-    }
-
     private function createGridBuilder(): GridBuilder
     {
         $dataSource = \Mockery::mock(DataSourceInterface::class);
@@ -56,7 +46,7 @@ class GridBuilderTest extends AbstractTestCase
                 if (!$headersSet) {
                     $headers[] = new Header($key, $key);
                 }
-                $columns[] = new DisplayColumn($key, $value);
+                $columns[] = new DisplayColumn($key, (string)$value);
             }
 
             $headersSet = true;
@@ -64,6 +54,16 @@ class GridBuilderTest extends AbstractTestCase
         }
 
         return new Grid($headers, $rows);
+    }
+
+    public function testSimpleGridDefinition(): void
+    {
+        $builder = $this->createGridBuilder();
+        $builder->addTextColumn('name', 'name');
+        $builder->addTextColumn('nickname', 'nickname');
+        $builder->addTextColumn('number', 'number');
+
+        $this->assertEquals($this->createSampleGrid(), $builder->build());
     }
 
     public function testNotExistingColumnKey(): void

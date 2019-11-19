@@ -14,16 +14,16 @@ class DisplayColumn
     private $key;
 
     /**
-     * @var mixed
+     * @var string
      */
     private $value;
 
     /**
      * DisplayColumn constructor.
      * @param string $key
-     * @param mixed $value
+     * @param string $value
      */
-    public function __construct(string $key, $value)
+    public function __construct(string $key, string $value)
     {
         $this->key = $key;
         $this->value = $value;
@@ -38,9 +38,9 @@ class DisplayColumn
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }

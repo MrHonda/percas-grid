@@ -74,7 +74,7 @@ class GridBuilder
                     throw new KeyNotFoundException($key);
                 }
 
-                $columns[] = new DisplayColumn($key, $dataRow[$key]);
+                $columns[] = new DisplayColumn($key, $column->getDisplayValue($dataRow[$key]));
             }
 
             $rows[] = new Row($columns);

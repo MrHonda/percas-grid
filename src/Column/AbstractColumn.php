@@ -46,4 +46,12 @@ abstract class AbstractColumn implements ColumnInterface
     {
         return $this->header;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDisplayValue($value): string
+    {
+        return (string)$value;
+    }
 }

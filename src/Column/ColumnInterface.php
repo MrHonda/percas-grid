@@ -18,4 +18,10 @@ interface ColumnInterface
      * @return Header
      */
     public function getHeader(): Header;
+
+    /**
+     * @param mixed $value
+     * @return string
+     */
+    public function getDisplayValue($value): string;
 }
