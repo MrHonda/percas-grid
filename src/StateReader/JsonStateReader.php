@@ -26,6 +26,12 @@ class JsonStateReader implements StateReaderInterface
             return null;
         }
 
-        return (new Serializer([new ObjectNormalizer()], [new JsonEncoder()]))->deserialize($data, GridState::class, 'json');
+        $result = (new Serializer([new ObjectNormalizer()], [new JsonEncoder()]))->deserialize($data, GridState::class, 'json');
+
+        if (!$result instanceof GridState) {
+            throw new \UnexpectedValueException('Expected GridState, got ' . gettype($result));
+        }
+
+        return $result;
     }
 }
