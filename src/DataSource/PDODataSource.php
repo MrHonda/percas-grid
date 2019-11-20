@@ -6,7 +6,10 @@ declare(strict_types=1);
 namespace Percas\Grid\DataSource;
 
 
-class PDODataSource extends AbstractDatabaseDataSource
+use Percas\Grid\Column\ColumnInterface;
+use Percas\Grid\GridState;
+
+class PDODataSource implements DataSourceInterface
 {
     /**
      * @var \PDO
@@ -32,11 +35,9 @@ class PDODataSource extends AbstractDatabaseDataSource
     /**
      * @inheritDoc
      */
-    public function getData(string $primaryKey, array $columns): array
+    public function getData(string $primaryKey, array $columns, GridState $state): array
     {
-        $cols = $this->prepareCols($primaryKey, $columns);
-
-        $sth = $this->dbh->prepare('SELECT ' . $cols . ' FROM ' . $this->object);
+        $sth = $this->dbh->prepare($this->prepareQuery($primaryKey, $columns, $state));
 
         if (!$sth->execute()) {
             throw new \PDOException($this->getErrorMessage($this->dbh->errorInfo()));
@@ -57,5 +58,70 @@ class PDODataSource extends AbstractDatabaseDataSource
     private function getErrorMessage(array $errorInfo): string
     {
         return 'ERROR ' . $errorInfo[1] . ' (' . $errorInfo[0] . '): ' . $errorInfo[2];
+    }
+
+    /**
+     * @param string $primaryKey
+     * @param array $columns
+     * @param GridState $state
+     * @return string
+     */
+    protected function prepareQuery(string $primaryKey, array $columns, GridState $state): string
+    {
+        $cols = $this->prepareCols($primaryKey, $columns);
+        $orderBy = $this->prepareOrderBy($state);
+
+        $query = 'SELECT ' . $cols . ' FROM ' . $this->object;
+
+        if ($orderBy !== '') {
+            $query .= ' ORDER BY ' . $orderBy;
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param string $primaryKey
+     * @param ColumnInterface[] $columns
+     * @return string
+     */
+    protected function prepareCols(string $primaryKey, array $columns): string
+    {
+        $cols = [];
+        $cols[] = $primaryKey;
+
+        foreach ($columns as $column) {
+            $key = $column->getKey();
+
+            if ($key === '') {
+                continue;
+            }
+
+            if (!in_array($key, $cols, true)) {
+                $cols[] = $key;
+            }
+        }
+
+        return implode(',', $cols);
+    }
+
+    /**
+     * @param GridState $state
+     * @return string
+     */
+    protected function prepareOrderBy(GridState $state): string
+    {
+        $sortedBy = $state->getSortedBy();
+        $sortDirection = strtoupper($state->getSortDirection());
+
+        if ($sortedBy === '' || $sortDirection === '') {
+            return '';
+        }
+
+        if ($sortDirection !== 'DESC') {
+            $sortDirection = 'ASC';
+        }
+
+        return $sortedBy . ' ' . $sortDirection;
     }
 }

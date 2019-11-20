@@ -91,9 +91,11 @@ class GridBuilder
 
     private function initState(): void
     {
-        $this->state = $this->stateReader->read();
+        $state = $this->stateReader->read();
 
-        if ($this->state === null) {
+        if ($state !== null) {
+            $this->state = $state;
+        } else {
             $this->state = new GridState();
         }
     }
@@ -118,7 +120,7 @@ class GridBuilder
     private function getRows(): array
     {
         $rows = [];
-        $data = $this->dataSource->getData($this->primaryKey, $this->columns);
+        $data = $this->dataSource->getData($this->primaryKey, $this->columns, $this->state);
 
         foreach ($data as $dataRow) {
             $columns = [];
