@@ -54,4 +54,13 @@ abstract class AbstractColumn implements ColumnInterface
     {
         return (string)$value;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function setSortable(bool $sortable)
+    {
+        $this->header->setSortable($sortable);
+        return $this;
+    }
 }

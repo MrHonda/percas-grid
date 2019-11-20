@@ -19,6 +19,11 @@ class Header
     private $name;
 
     /**
+     * @var bool
+     */
+    private $sortable = true;
+
+    /**
      * Header constructor.
      * @param string $key
      * @param string $name
@@ -43,5 +48,23 @@ class Header
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSortable(): bool
+    {
+        return $this->sortable;
+    }
+
+    /**
+     * @param bool $sortable
+     * @return Header
+     */
+    public function setSortable(bool $sortable): Header
+    {
+        $this->sortable = $sortable;
+        return $this;
     }
 }

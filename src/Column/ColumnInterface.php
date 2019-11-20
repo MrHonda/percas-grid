@@ -24,4 +24,10 @@ interface ColumnInterface
      * @return string
      */
     public function getDisplayValue($value): string;
+
+    /**
+     * @param bool $sortable
+     * @return $this
+     */
+    public function setSortable(bool $sortable);
 }

@@ -9,6 +9,8 @@ use Percas\Grid\Column\ColumnInterface;
 use Percas\Grid\Column\TextColumn;
 use Percas\Grid\DataSource\DataSourceInterface;
 use Percas\Grid\Exception\KeyNotFoundException;
+use Percas\Grid\StateReader\JsonStateReader;
+use Percas\Grid\StateReader\StateReaderInterface;
 
 class GridBuilder
 {
@@ -23,12 +25,40 @@ class GridBuilder
     private $columns = [];
 
     /**
+     * @var GridState
+     */
+    private $state;
+
+    /**
+     * @var StateReaderInterface
+     */
+    private $stateReader;
+
+    /**
+     * @var StateReaderInterface
+     */
+    private static $defaultStateReader;
+
+    /**
      * GridBuilder constructor.
      * @param DataSourceInterface $dataSource
      */
     public function __construct(DataSourceInterface $dataSource)
     {
         $this->dataSource = $dataSource;
+
+        self::$defaultStateReader = new JsonStateReader();
+        $this->stateReader = self::$defaultStateReader;
+
+        $this->initState();
+    }
+
+    /**
+     * @param StateReaderInterface $defaultStateReader
+     */
+    public static function setDefaultStateReader(StateReaderInterface $defaultStateReader): void
+    {
+        self::$defaultStateReader = $defaultStateReader;
     }
 
     /**
@@ -40,6 +70,25 @@ class GridBuilder
         $rows = $this->getRows();
 
         return new Grid($headers, $rows);
+    }
+
+    /**
+     * @param StateReaderInterface $stateReader
+     * @return GridBuilder
+     */
+    public function setStateReader(StateReaderInterface $stateReader): GridBuilder
+    {
+        $this->stateReader = $stateReader;
+        return $this;
+    }
+
+    private function initState(): void
+    {
+        $this->state = $this->stateReader->read();
+
+        if ($this->state === null) {
+            $this->state = new GridState();
+        }
     }
 
     /**
