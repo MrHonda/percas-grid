@@ -20,6 +20,11 @@ class GridBuilder
     private $dataSource;
 
     /**
+     * @var string
+     */
+    private $primaryKey;
+
+    /**
      * @var ColumnInterface[]
      */
     private $columns = [];
@@ -42,10 +47,12 @@ class GridBuilder
     /**
      * GridBuilder constructor.
      * @param DataSourceInterface $dataSource
+     * @param string $primaryKey
      */
-    public function __construct(DataSourceInterface $dataSource)
+    public function __construct(DataSourceInterface $dataSource, string $primaryKey = 'id')
     {
         $this->dataSource = $dataSource;
+        $this->primaryKey = $primaryKey;
 
         self::$defaultStateReader = new JsonStateReader();
         $this->stateReader = self::$defaultStateReader;
@@ -111,7 +118,7 @@ class GridBuilder
     private function getRows(): array
     {
         $rows = [];
-        $data = $this->dataSource->getData();
+        $data = $this->dataSource->getData($this->primaryKey, $this->columns);
 
         foreach ($data as $dataRow) {
             $columns = [];

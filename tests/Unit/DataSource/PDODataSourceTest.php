@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Percas\Grid\Tests\Unit\DataSource;
 
 
+use Percas\Grid\Column\TextColumn;
 use Percas\Grid\DataSource\PDODataSource;
 use Percas\Grid\Tests\Unit\AbstractTestCase;
 
@@ -25,6 +26,7 @@ class PDODataSourceTest extends AbstractTestCase
     {
         //TODO: Change it to localhost?
         self::$dbh = new \PDO('mysql:host=192.168.1.137:3307;dbname=percas_grid', 'root', 'root');
+        self::$dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
     public static function tearDownAfterClass(): void
@@ -32,21 +34,38 @@ class PDODataSourceTest extends AbstractTestCase
         self::$dbh = null;
     }
 
-    public function testGetData(): void
+    protected function setUp(): void
     {
-        $this->assertIsArray($this->dataSource->getData());
+        $this->dataSource = new PDODataSource(self::$dbh, 'grid1');
     }
 
-    public function testGetDataWithWrongSqlSyntax(): void
+    public function testGetData(): void
+    {
+        $columns = [
+            new TextColumn('value1', 'value1'),
+            new TextColumn('value2', 'value2'),
+        ];
+
+        $this->assertIsArray($this->dataSource->getData('id', $columns));
+    }
+
+    public function testGetDataWithNonExistingColumn(): void
     {
         $this->expectException(\PDOException::class);
 
-        $dataSource = new PDODataSource(self::$dbh->prepare('SELECT * FROMm grid1'));
-        $dataSource->getData();
+        $columns = [
+            new TextColumn('value1', 'value1'),
+            new TextColumn('vaalue2', 'value2'),
+        ];
+
+        $this->assertIsArray($this->dataSource->getData('id', $columns));
     }
 
-    protected function setUp(): void
+    public function testGetDataWithNonExistingObject(): void
     {
-        $this->dataSource = new PDODataSource(self::$dbh->prepare('SELECT * FROM grid1'));
+        $this->expectException(\PDOException::class);
+
+        $dataSource = new PDODataSource(self::$dbh, 'grid123');
+        $dataSource->getData('id', []);
     }
 }

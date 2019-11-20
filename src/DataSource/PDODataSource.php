@@ -6,34 +6,45 @@ declare(strict_types=1);
 namespace Percas\Grid\DataSource;
 
 
-class PDODataSource implements DataSourceInterface
+class PDODataSource extends AbstractDatabaseDataSource
 {
     /**
-     * @var \PDOStatement
+     * @var \PDO
      */
-    private $sth;
+    private $dbh;
+
+    /**
+     * @var string
+     */
+    private $object;
 
     /**
      * PDODataSource constructor.
-     * @param \PDOStatement $sth
+     * @param \PDO $dbh
+     * @param string $object
      */
-    public function __construct(\PDOStatement $sth)
+    public function __construct(\PDO $dbh, string $object)
     {
-        $this->sth = $sth;
+        $this->dbh = $dbh;
+        $this->object = $object;
     }
 
     /**
      * @inheritDoc
      */
-    public function getData(): array
+    public function getData(string $primaryKey, array $columns): array
     {
-        if (!$this->sth->execute()) {
-            throw new \PDOException($this->getErrorMessage($this->sth->errorInfo()));
+        $cols = $this->prepareCols($primaryKey, $columns);
+
+        $sth = $this->dbh->prepare('SELECT ' . $cols . ' FROM ' . $this->object);
+
+        if (!$sth->execute()) {
+            throw new \PDOException($this->getErrorMessage($this->dbh->errorInfo()));
         }
-        $data = $this->sth->fetchAll(\PDO::FETCH_ASSOC);
+        $data = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
         if ($data === false) {
-            throw new \PDOException($this->getErrorMessage($this->sth->errorInfo()));
+            throw new \PDOException($this->getErrorMessage($this->dbh->errorInfo()));
         }
 
         return $data;
