@@ -115,12 +115,34 @@ class GridBuilder
     }
 
     /**
+     * @return string[]
+     */
+    private function prepareKeys(): array
+    {
+        $keys = [];
+        $keys[] = $this->primaryKey;
+
+        foreach ($this->columns as $column) {
+            $key = $column->getKey();
+            if ($key === '') {
+                continue;
+            }
+
+            if (!in_array($key, $keys, true)) {
+                $keys[] = $key;
+            }
+        }
+
+        return $keys;
+    }
+
+    /**
      * @return Row[]
      */
     private function getRows(): array
     {
         $rows = [];
-        $data = $this->dataSource->getData($this->primaryKey, $this->columns, $this->state);
+        $data = $this->dataSource->getData($this->prepareKeys(), $this->state);
 
         foreach ($data as $dataRow) {
             $columns = [];

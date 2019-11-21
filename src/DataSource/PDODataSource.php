@@ -6,7 +6,6 @@ declare(strict_types=1);
 namespace Percas\Grid\DataSource;
 
 
-use Percas\Grid\Column\ColumnInterface;
 use Percas\Grid\GridState;
 
 class PDODataSource implements DataSourceInterface
@@ -35,9 +34,9 @@ class PDODataSource implements DataSourceInterface
     /**
      * @inheritDoc
      */
-    public function getData(string $primaryKey, array $columns, GridState $state): array
+    public function getData(array $columns, GridState $state): array
     {
-        $sth = $this->dbh->prepare($this->prepareQuery($primaryKey, $columns, $state));
+        $sth = $this->dbh->prepare($this->prepareQuery($columns, $state));
 
         if (!$sth->execute()) {
             throw new \PDOException($this->getErrorMessage($this->dbh->errorInfo()));
@@ -61,14 +60,13 @@ class PDODataSource implements DataSourceInterface
     }
 
     /**
-     * @param string $primaryKey
-     * @param array $columns
+     * @param string[] $columns
      * @param GridState $state
      * @return string
      */
-    protected function prepareQuery(string $primaryKey, array $columns, GridState $state): string
+    protected function prepareQuery(array $columns, GridState $state): string
     {
-        $cols = $this->prepareCols($primaryKey, $columns);
+        $cols = $this->prepareColumns($columns);
         $orderBy = $this->prepareOrderBy($state);
 
         $query = 'SELECT ' . $cols . ' FROM ' . $this->object;
@@ -81,28 +79,12 @@ class PDODataSource implements DataSourceInterface
     }
 
     /**
-     * @param string $primaryKey
-     * @param ColumnInterface[] $columns
+     * @param string[] $columns
      * @return string
      */
-    protected function prepareCols(string $primaryKey, array $columns): string
+    protected function prepareColumns(array $columns): string
     {
-        $cols = [];
-        $cols[] = $primaryKey;
-
-        foreach ($columns as $column) {
-            $key = $column->getKey();
-
-            if ($key === '') {
-                continue;
-            }
-
-            if (!in_array($key, $cols, true)) {
-                $cols[] = $key;
-            }
-        }
-
-        return implode(',', $cols);
+        return implode(',', $columns);
     }
 
     /**
