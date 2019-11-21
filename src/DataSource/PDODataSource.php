@@ -93,17 +93,6 @@ class PDODataSource implements DataSourceInterface
      */
     protected function prepareOrderBy(GridState $state): string
     {
-        $sortedBy = $state->getSortedBy();
-        $sortDirection = strtoupper($state->getSortDirection());
-
-        if ($sortedBy === '' || $sortDirection === '') {
-            return '';
-        }
-
-        if ($sortDirection !== 'DESC') {
-            $sortDirection = 'ASC';
-        }
-
-        return $sortedBy . ' ' . $sortDirection;
+        return $state->isSorted() ? $state->getSortedBy() . ' ' . $state->getSortDirection() : '';
     }
 }

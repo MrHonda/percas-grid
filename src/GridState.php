@@ -8,6 +8,9 @@ namespace Percas\Grid;
 
 class GridState
 {
+    public const SORT_ASC = 'ASC';
+    public const SORT_DESC = 'DESC';
+
     /**
      * @var string
      */
@@ -17,6 +20,11 @@ class GridState
      * @var string
      */
     private $sort_direction = '';
+
+    public function isSorted(): bool
+    {
+        return $this->sorted_by !== '' && $this->sort_direction !== '';
+    }
 
     /**
      * @return string
@@ -41,11 +49,11 @@ class GridState
      */
     public function getSortDirection(): string
     {
-        return $this->sort_direction;
+        return strtoupper($this->sort_direction) !== self::SORT_DESC ? self::SORT_ASC : self::SORT_DESC;
     }
 
     /**
-     * @param string $sort_direction
+     * @param string $sort_direction - GridState::SORT_ASC | GridState::SORT_DESC
      * @return GridState
      */
     public function setSortDirection(string $sort_direction): GridState
