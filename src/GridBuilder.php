@@ -164,6 +164,16 @@ class GridBuilder
     }
 
     /**
+     * @param ColumnInterface $column
+     * @return ColumnInterface
+     */
+    public function addColumn(ColumnInterface $column): ColumnInterface
+    {
+        $this->columns[] = $column;
+        return $column;
+    }
+
+    /**
      * @param string $key
      * @param string $name
      * @return TextColumn
