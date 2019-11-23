@@ -17,7 +17,8 @@
     "php": "^7.2",
     "ext-pdo": "*",
     "symfony/property-access": "^4.3",
-    "symfony/serializer": "^4.3"
+    "symfony/serializer": "^4.3",
+    "ext-json": "*"
   },
   "require-dev": {
     "mockery/mockery": "^1.2",

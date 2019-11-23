@@ -55,4 +55,28 @@ class JsonStateReaderTest extends AbstractTestCase
         $reader = new JsonStateReader();
         $this->assertEquals(null, $reader->read());
     }
+
+    public function testReadJsonWithFilters(): void
+    {
+        $data = [
+            'sorted_by' => 'col1',
+            'sort_direction' => 'asc',
+            'filters' => [
+                1 => 'test1',
+                2 => 'test2'
+            ]
+        ];
+
+        $state = new GridState();
+        $state
+            ->setFilter(1, 'test1')
+            ->setFilter(2, 'test2')
+            ->setSortedBy($data['sorted_by'])
+            ->setSortDirection($data['sort_direction']);
+
+        $_GET['grid'] = json_encode($data);
+
+        $reader = new JsonStateReader();
+        $this->assertEquals($state, $reader->read());
+    }
 }

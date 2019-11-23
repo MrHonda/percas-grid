@@ -56,8 +56,6 @@ class GridBuilder
 
         self::$defaultStateReader = new JsonStateReader();
         $this->stateReader = self::$defaultStateReader;
-
-        $this->initState();
     }
 
     /**
@@ -73,8 +71,12 @@ class GridBuilder
      */
     public function build(): Grid
     {
+        $this->initState();
+        
         $headers = $this->extractHeaders();
-        $rows = $this->getRows();
+        $filters = $this->prepareFilters($headers);
+
+        $rows = $this->getRows($filters);
 
         return new Grid($headers, $rows);
     }
@@ -137,12 +139,35 @@ class GridBuilder
     }
 
     /**
+     * @param Header[] $headers
+     * @return DataFilter[]
+     */
+    private function prepareFilters(array $headers): array
+    {
+        $filters = [];
+        $index = 1;
+
+        foreach ($headers as $header) {
+            foreach ($header->getFilters() as $filter) {
+                $filter->setValue($this->state->getFilter($index++));
+
+                if ($filter->hasValue()) {
+                    $filters[] = $filter->getDataFilter();
+                }
+            }
+        }
+
+        return $filters;
+    }
+
+    /**
+     * @param DataFilter[] $filters
      * @return Row[]
      */
-    private function getRows(): array
+    private function getRows(array $filters): array
     {
         $rows = [];
-        $data = $this->dataSource->getData($this->prepareKeys(), $this->state);
+        $data = $this->dataSource->getData($this->prepareKeys(), $filters, $this->state);
 
         foreach ($data as $dataRow) {
             $columns = [];

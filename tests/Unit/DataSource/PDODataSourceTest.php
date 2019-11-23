@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Percas\Grid\Tests\Unit\DataSource;
 
 
+use Percas\Grid\DataFilter;
 use Percas\Grid\DataSource\PDODataSource;
 use Percas\Grid\GridState;
 use Percas\Grid\Tests\Unit\AbstractTestCase;
@@ -44,7 +45,7 @@ class PDODataSourceTest extends AbstractTestCase
     {
         $columns = ['value1', 'value2'];
 
-        $this->assertIsArray($this->dataSource->getData($columns, new GridState()));
+        $this->assertIsArray($this->dataSource->getData($columns, [], new GridState()));
     }
 
     public function testGetDataWithNonExistingColumn(): void
@@ -52,7 +53,7 @@ class PDODataSourceTest extends AbstractTestCase
         $this->expectException(\PDOException::class);
         $columns = ['value1', 'vaalue2'];
 
-        $this->assertIsArray($this->dataSource->getData($columns, new GridState()));
+        $this->assertIsArray($this->dataSource->getData($columns, [], new GridState()));
     }
 
     public function testGetDataWithNonExistingObject(): void
@@ -60,7 +61,7 @@ class PDODataSourceTest extends AbstractTestCase
         $this->expectException(\PDOException::class);
 
         $dataSource = new PDODataSource(self::$dbh, 'grid123');
-        $dataSource->getData([], new GridState());
+        $dataSource->getData([], [], new GridState());
     }
 
     /**
@@ -71,7 +72,7 @@ class PDODataSourceTest extends AbstractTestCase
         $columns = ['id', 'value1'];
         $state = new GridState();
 
-        $result = TestUtils::invokeMethod($this->dataSource, 'prepareQuery', [$columns, $state]);
+        $result = TestUtils::invokeMethod($this->dataSource, 'prepareQuery', [$columns, [], $state]);
         $this->assertEquals('SELECT id,value1 FROM grid1', $result);
     }
 
@@ -86,7 +87,43 @@ class PDODataSourceTest extends AbstractTestCase
             ->setSortedBy('id')
             ->setSortDirection('desc');
 
-        $result = TestUtils::invokeMethod($this->dataSource, 'prepareQuery', [$columns, $state]);
+        $result = TestUtils::invokeMethod($this->dataSource, 'prepareQuery', [$columns, [], $state]);
         $this->assertEquals('SELECT id,value1 FROM grid1 ORDER BY id DESC', $result);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testQueryGenerationWithWhere(): void
+    {
+        $columns = ['id', 'value1'];
+        $state = new GridState();
+        $state
+            ->setFilter(1, 'test');
+
+        $filter = new DataFilter('value1', '=', 'test');
+        $where = $filter->getSqlCondition();
+
+        $result = TestUtils::invokeMethod($this->dataSource, 'prepareQuery', [$columns, [$filter], $state]);
+        $this->assertEquals('SELECT id,value1 FROM grid1 WHERE ' . $where, $result);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testQueryGenerationWithWhereAndOrderBy(): void
+    {
+        $columns = ['id', 'value1'];
+        $state = new GridState();
+        $state
+            ->setFilter(1, 'test')
+            ->setSortedBy('id')
+            ->setSortDirection('desc');
+
+        $filter = new DataFilter('value1', '=', 'test');
+        $where = $filter->getSqlCondition();
+
+        $result = TestUtils::invokeMethod($this->dataSource, 'prepareQuery', [$columns, [$filter], $state]);
+        $this->assertEquals('SELECT id,value1 FROM grid1 WHERE ' . $where . ' ORDER BY id DESC', $result);
     }
 }

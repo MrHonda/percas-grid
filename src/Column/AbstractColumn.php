@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Percas\Grid\Column;
 
 
+use Percas\Grid\Filter\FilterInterface;
 use Percas\Grid\Header;
 
 abstract class AbstractColumn implements ColumnInterface
@@ -44,6 +45,10 @@ abstract class AbstractColumn implements ColumnInterface
      */
     public function getHeader(): Header
     {
+        if ($this->header->isFilterable() && !$this->header->hasFilters()) {
+            $this->header->setFilters($this->getDefaultFilters());
+        }
+
         return $this->header;
     }
 
@@ -61,6 +66,33 @@ abstract class AbstractColumn implements ColumnInterface
     public function setSortable(bool $sortable)
     {
         $this->header->setSortable($sortable);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setFilterable(bool $filterable)
+    {
+        $this->header->setFilterable($filterable);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setFilters(array $filters)
+    {
+        $this->header->setFilters($filters);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addFilter(FilterInterface $filter)
+    {
+        $this->header->addFilter($filter);
         return $this;
     }
 }

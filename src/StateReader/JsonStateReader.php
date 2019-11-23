@@ -32,6 +32,12 @@ class JsonStateReader implements StateReaderInterface
             throw new \UnexpectedValueException('Expected GridState, got ' . gettype($result));
         }
 
+        $encoded = json_decode($data, true);
+
+        if (isset($encoded['filters'])) {
+            $result->setFilters($encoded['filters']);
+        }
+
         return $result;
     }
 }
