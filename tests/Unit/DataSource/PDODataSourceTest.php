@@ -73,7 +73,7 @@ class PDODataSourceTest extends AbstractTestCase
         $state = new GridState();
 
         $result = TestUtils::invokeMethod($this->dataSource, 'prepareQuery', [$columns, [], $state]);
-        $this->assertEquals('SELECT id,value1 FROM grid1', $result);
+        $this->assertEquals('SELECT id,value1 FROM grid1 LIMIT :_offset,:_limit', $result);
     }
 
     /**
@@ -88,7 +88,7 @@ class PDODataSourceTest extends AbstractTestCase
             ->setSortDirection('desc');
 
         $result = TestUtils::invokeMethod($this->dataSource, 'prepareQuery', [$columns, [], $state]);
-        $this->assertEquals('SELECT id,value1 FROM grid1 ORDER BY id DESC', $result);
+        $this->assertEquals('SELECT id,value1 FROM grid1 ORDER BY id DESC LIMIT :_offset,:_limit', $result);
     }
 
     /**
@@ -105,7 +105,7 @@ class PDODataSourceTest extends AbstractTestCase
         $where = $filter->getSqlCondition();
 
         $result = TestUtils::invokeMethod($this->dataSource, 'prepareQuery', [$columns, [$filter], $state]);
-        $this->assertEquals('SELECT id,value1 FROM grid1 WHERE ' . $where, $result);
+        $this->assertEquals('SELECT id,value1 FROM grid1 WHERE ' . $where . ' LIMIT :_offset,:_limit', $result);
     }
 
     /**
@@ -124,6 +124,11 @@ class PDODataSourceTest extends AbstractTestCase
         $where = $filter->getSqlCondition();
 
         $result = TestUtils::invokeMethod($this->dataSource, 'prepareQuery', [$columns, [$filter], $state]);
-        $this->assertEquals('SELECT id,value1 FROM grid1 WHERE ' . $where . ' ORDER BY id DESC', $result);
+        $this->assertEquals('SELECT id,value1 FROM grid1 WHERE ' . $where . ' ORDER BY id DESC LIMIT :_offset,:_limit', $result);
+    }
+
+    public function testGetDataCount(): void
+    {
+        $this->assertEquals(2, $this->dataSource->getDataCount([], new GridState()));
     }
 }

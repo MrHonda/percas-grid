@@ -72,13 +72,14 @@ class GridBuilder
     public function build(): Grid
     {
         $this->initState();
-        
+
         $headers = $this->extractHeaders();
         $filters = $this->prepareFilters($headers);
 
         $rows = $this->getRows($filters);
+        $pagination = new Pagination($this->state->getCurrentPage(), $this->state->getRecordsPerPage(), $this->dataSource->getDataCount($filters, $this->state));
 
-        return new Grid($headers, $rows);
+        return new Grid($headers, $rows, $pagination);
     }
 
     /**

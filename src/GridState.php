@@ -11,6 +11,8 @@ class GridState
     public const SORT_ASC = 'ASC';
     public const SORT_DESC = 'DESC';
 
+    public const DEFAULT_RECORDS_PER_PAGE = 10;
+
     /**
      * @var string[]
      */
@@ -25,6 +27,16 @@ class GridState
      * @var string
      */
     private $sort_direction = '';
+
+    /**
+     * @var int
+     */
+    private $current_page = 1;
+
+    /**
+     * @var int
+     */
+    private $records_per_page = self::DEFAULT_RECORDS_PER_PAGE;
 
     /**
      * @param int $index
@@ -102,6 +114,42 @@ class GridState
     public function setSortDirection(string $sort_direction): GridState
     {
         $this->sort_direction = $sort_direction;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentPage(): int
+    {
+        return $this->current_page;
+    }
+
+    /**
+     * @param int $current_page
+     * @return GridState
+     */
+    public function setCurrentPage(int $current_page): GridState
+    {
+        $this->current_page = $current_page;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRecordsPerPage(): int
+    {
+        return $this->records_per_page;
+    }
+
+    /**
+     * @param int $records_per_page
+     * @return GridState
+     */
+    public function setRecordsPerPage(int $records_per_page): GridState
+    {
+        $this->records_per_page = $records_per_page;
         return $this;
     }
 }

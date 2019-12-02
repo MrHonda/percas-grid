@@ -17,4 +17,11 @@ interface DataSourceInterface
      * @return array
      */
     public function getData(array $columns, array $filters, GridState $state): array;
+
+    /**
+     * @param array $filters
+     * @param GridState $state
+     * @return int
+     */
+    public function getDataCount(array $filters, GridState $state): int;
 }

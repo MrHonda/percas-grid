@@ -14,6 +14,7 @@ use Percas\Grid\Grid;
 use Percas\Grid\GridBuilder;
 use Percas\Grid\GridState;
 use Percas\Grid\Header;
+use Percas\Grid\Pagination;
 use Percas\Grid\Row;
 use Percas\Grid\StateReader\StateReaderInterface;
 
@@ -23,6 +24,7 @@ class GridBuilderTest extends AbstractTestCase
     {
         $dataSource = \Mockery::mock(DataSourceInterface::class);
         $dataSource->shouldReceive('getData')->andReturns($this->getSampleData())->once();
+        $dataSource->shouldReceive('getDataCount')->andReturns(3)->atMost()->once();
         return new GridBuilder($dataSource);
     }
 
@@ -58,7 +60,7 @@ class GridBuilderTest extends AbstractTestCase
             $rows[] = new Row($columns);
         }
 
-        return new Grid($headers, $rows);
+        return new Grid($headers, $rows, new Pagination(1, 10, 3));
     }
 
     public function testSimpleGridDefinition(): void
@@ -132,5 +134,12 @@ class GridBuilderTest extends AbstractTestCase
         ];
 
         $this->assertEquals($rows, $grid->getRows());
+    }
+
+    public function testPaginationGeneration(): void
+    {
+        $builder = $this->createGridBuilder();
+        $grid = $builder->build();
+        $this->assertEquals(new Pagination(1, GridState::DEFAULT_RECORDS_PER_PAGE, 3), $grid->getPagination());
     }
 }

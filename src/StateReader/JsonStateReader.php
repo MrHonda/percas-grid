@@ -26,6 +26,7 @@ class JsonStateReader implements StateReaderInterface
             return null;
         }
 
+        /** @var GridState $result */
         $result = (new Serializer([new ObjectNormalizer()], [new JsonEncoder()]))->deserialize($data, GridState::class, 'json');
 
         if (!$result instanceof GridState) {

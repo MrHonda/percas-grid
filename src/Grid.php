@@ -18,14 +18,21 @@ class Grid
     private $rows;
 
     /**
+     * @var Pagination
+     */
+    private $pagination;
+
+    /**
      * Grid constructor.
      * @param Header[] $headers
      * @param Row[] $rows
+     * @param Pagination $pagination
      */
-    public function __construct(array $headers, array $rows)
+    public function __construct(array $headers, array $rows, Pagination $pagination)
     {
         $this->headers = $headers;
         $this->rows = $rows;
+        $this->pagination = $pagination;
     }
 
     /**
@@ -42,5 +49,13 @@ class Grid
     public function getRows(): array
     {
         return $this->rows;
+    }
+
+    /**
+     * @return Pagination
+     */
+    public function getPagination(): Pagination
+    {
+        return $this->pagination;
     }
 }
