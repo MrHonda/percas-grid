@@ -51,6 +51,11 @@ class GridBuilder
     private $stateSource;
 
     /**
+     * @var string
+     */
+    private static $defaultPrimaryKey = 'id';
+
+    /**
      * @var string|int
      */
     private static $defaultStateIdentifier = '';
@@ -68,20 +73,27 @@ class GridBuilder
     /**
      * GridBuilder constructor.
      * @param DataSourceInterface $dataSource
-     * @param string $primaryKey
      */
-    public function __construct(DataSourceInterface $dataSource, string $primaryKey = 'id')
+    public function __construct(DataSourceInterface $dataSource)
     {
         $this->dataSource = $dataSource;
-        $this->primaryKey = $primaryKey;
 
         if (self::$defaultStateReader === null) {
             self::$defaultStateReader = new JsonStateReader();
         }
 
+        $this->primaryKey = self::$defaultPrimaryKey;
         $this->stateIdentifier = self::$defaultStateIdentifier;
         $this->stateReader = self::$defaultStateReader;
         $this->stateSource = self::$defaultStateSource;
+    }
+
+    /**
+     * @param string $defaultPrimaryKey
+     */
+    public static function setDefaultPrimaryKey(string $defaultPrimaryKey): void
+    {
+        self::$defaultPrimaryKey = $defaultPrimaryKey;
     }
 
     /**
@@ -126,6 +138,16 @@ class GridBuilder
         }
 
         return new Grid($headers, $rows, $pagination);
+    }
+
+    /**
+     * @param string $primaryKey
+     * @return GridBuilder
+     */
+    public function setPrimaryKey(string $primaryKey): GridBuilder
+    {
+        $this->primaryKey = $primaryKey;
+        return $this;
     }
 
     /**
