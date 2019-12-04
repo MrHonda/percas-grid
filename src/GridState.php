@@ -104,7 +104,7 @@ class GridState
      */
     public function getSortDirection(): string
     {
-        return strtoupper($this->sort_direction) !== self::SORT_DESC ? self::SORT_ASC : self::SORT_DESC;
+        return $this->sort_direction;
     }
 
     /**
@@ -113,7 +113,7 @@ class GridState
      */
     public function setSortDirection(string $sort_direction): GridState
     {
-        $this->sort_direction = $sort_direction;
+        $this->sort_direction = strtoupper($sort_direction) !== self::SORT_DESC ? self::SORT_ASC : self::SORT_DESC;
         return $this;
     }
 

@@ -8,6 +8,7 @@ namespace Percas\Grid\DataSource;
 
 use Percas\Grid\DataFilter;
 use Percas\Grid\GridState;
+use Percas\Grid\Helper\PDOHelper;
 
 class PDODataSource implements DataSourceInterface
 {
@@ -41,12 +42,12 @@ class PDODataSource implements DataSourceInterface
         $this->prepareParameters($sth, $filters, $state);
 
         if (!$sth->execute()) {
-            throw new \PDOException($this->getErrorMessage($this->dbh->errorInfo()));
+            throw new \PDOException(PDOHelper::getErrorMessage($this->dbh->errorInfo()));
         }
         $data = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
         if ($data === false) {
-            throw new \PDOException($this->getErrorMessage($this->dbh->errorInfo()));
+            throw new \PDOException(PDOHelper::getErrorMessage($this->dbh->errorInfo()));
         }
 
         return $data;
@@ -61,25 +62,16 @@ class PDODataSource implements DataSourceInterface
         $this->prepareParameters($sth, $filters, $state);
 
         if (!$sth->execute()) {
-            throw new \PDOException($this->getErrorMessage($this->dbh->errorInfo()));
+            throw new \PDOException(PDOHelper::getErrorMessage($this->dbh->errorInfo()));
         }
 
         $data = $sth->fetchColumn(0);
 
         if ($data === false) {
-            throw new \PDOException($this->getErrorMessage($this->dbh->errorInfo()));
+            throw new \PDOException(PDOHelper::getErrorMessage($this->dbh->errorInfo()));
         }
 
         return (int)$data;
-    }
-
-    /**
-     * @param array $errorInfo
-     * @return string
-     */
-    private function getErrorMessage(array $errorInfo): string
-    {
-        return 'ERROR ' . $errorInfo[1] . ' (' . $errorInfo[0] . '): ' . $errorInfo[2];
     }
 
     /**

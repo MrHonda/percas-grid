@@ -11,6 +11,7 @@ use Percas\Grid\DataSource\DataSourceInterface;
 use Percas\Grid\Exception\KeyNotFoundException;
 use Percas\Grid\StateReader\JsonStateReader;
 use Percas\Grid\StateReader\StateReaderInterface;
+use Percas\Grid\StateSource\StateSourceInterface;
 
 class GridBuilder
 {
@@ -35,14 +36,34 @@ class GridBuilder
     private $state;
 
     /**
+     * @var string|int
+     */
+    private $stateIdentifier;
+
+    /**
      * @var StateReaderInterface
      */
     private $stateReader;
 
     /**
+     * @var StateSourceInterface
+     */
+    private $stateSource;
+
+    /**
+     * @var string|int
+     */
+    private static $defaultStateIdentifier = '';
+
+    /**
      * @var StateReaderInterface
      */
     private static $defaultStateReader;
+
+    /**
+     * @var StateSourceInterface
+     */
+    private static $defaultStateSource;
 
     /**
      * GridBuilder constructor.
@@ -54,8 +75,21 @@ class GridBuilder
         $this->dataSource = $dataSource;
         $this->primaryKey = $primaryKey;
 
-        self::$defaultStateReader = new JsonStateReader();
+        if (self::$defaultStateReader === null) {
+            self::$defaultStateReader = new JsonStateReader();
+        }
+
+        $this->stateIdentifier = self::$defaultStateIdentifier;
         $this->stateReader = self::$defaultStateReader;
+        $this->stateSource = self::$defaultStateSource;
+    }
+
+    /**
+     * @param string|int $defaultStateIdentifier
+     */
+    public static function setDefaultStateIdentifier($defaultStateIdentifier): void
+    {
+        self::$defaultStateIdentifier = $defaultStateIdentifier;
     }
 
     /**
@@ -64,6 +98,14 @@ class GridBuilder
     public static function setDefaultStateReader(StateReaderInterface $defaultStateReader): void
     {
         self::$defaultStateReader = $defaultStateReader;
+    }
+
+    /**
+     * @param StateSourceInterface $defaultStateSource
+     */
+    public static function setDefaultStateSource(StateSourceInterface $defaultStateSource): void
+    {
+        self::$defaultStateSource = $defaultStateSource;
     }
 
     /**
@@ -79,7 +121,21 @@ class GridBuilder
         $rows = $this->getRows($filters);
         $pagination = new Pagination($this->state->getCurrentPage(), $this->state->getRecordsPerPage(), $this->dataSource->getDataCount($filters, $this->state));
 
+        if ($this->stateSource !== null) {
+            $this->stateSource->save($this->stateIdentifier, $this->state);
+        }
+
         return new Grid($headers, $rows, $pagination);
+    }
+
+    /**
+     * @param string|int $stateIdentifier
+     * @return GridBuilder
+     */
+    public function setStateIdentifier($stateIdentifier): GridBuilder
+    {
+        $this->stateIdentifier = $stateIdentifier;
+        return $this;
     }
 
     /**
@@ -92,12 +148,24 @@ class GridBuilder
         return $this;
     }
 
+    /**
+     * @param StateSourceInterface $stateSource
+     * @return GridBuilder
+     */
+    public function setStateSource(StateSourceInterface $stateSource): GridBuilder
+    {
+        $this->stateSource = $stateSource;
+        return $this;
+    }
+
     private function initState(): void
     {
         $state = $this->stateReader->read();
 
         if ($state !== null) {
             $this->state = $state;
+        } else if ($this->stateSource !== null) {
+            $this->state = $this->stateSource->load($this->stateIdentifier);
         } else {
             $this->state = new GridState();
         }
