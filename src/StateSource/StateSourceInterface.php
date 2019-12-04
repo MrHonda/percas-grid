@@ -11,14 +11,16 @@ use Percas\Grid\GridState;
 interface StateSourceInterface
 {
     /**
-     * @param string|int $identifier
+     * @param string|int $gridIdentifier
+     * @param string|int $userIdentifier
      * @return GridState
      */
-    public function load($identifier): GridState;
+    public function load($gridIdentifier, $userIdentifier): GridState;
 
     /**
-     * @param string|int $identifier
+     * @param string|int $gridIdentifier
+     * @param string|int $userIdentifier
      * @param GridState $state
      */
-    public function save($identifier, GridState $state): void;
+    public function save($gridIdentifier, $userIdentifier, GridState $state): void;
 }

@@ -38,7 +38,12 @@ class GridBuilder
     /**
      * @var string|int
      */
-    private $stateIdentifier;
+    private $stateGridIdentifier = 'grid';
+
+    /**
+     * @var string|int
+     */
+    private $stateUserIdentifier;
 
     /**
      * @var StateReaderInterface
@@ -58,7 +63,7 @@ class GridBuilder
     /**
      * @var string|int
      */
-    private static $defaultStateIdentifier = '';
+    private static $defaultStateUserIdentifier = '';
 
     /**
      * @var StateReaderInterface
@@ -83,7 +88,7 @@ class GridBuilder
         }
 
         $this->primaryKey = self::$defaultPrimaryKey;
-        $this->stateIdentifier = self::$defaultStateIdentifier;
+        $this->stateUserIdentifier = self::$defaultStateUserIdentifier;
         $this->stateReader = self::$defaultStateReader;
         $this->stateSource = self::$defaultStateSource;
     }
@@ -97,11 +102,11 @@ class GridBuilder
     }
 
     /**
-     * @param string|int $defaultStateIdentifier
+     * @param string|int $defaultStateUserIdentifier
      */
-    public static function setDefaultStateIdentifier($defaultStateIdentifier): void
+    public static function setDefaultStateUserIdentifier($defaultStateUserIdentifier): void
     {
-        self::$defaultStateIdentifier = $defaultStateIdentifier;
+        self::$defaultStateUserIdentifier = $defaultStateUserIdentifier;
     }
 
     /**
@@ -134,7 +139,7 @@ class GridBuilder
         $pagination = new Pagination($this->state->getCurrentPage(), $this->state->getRecordsPerPage(), $this->dataSource->getDataCount($filters, $this->state));
 
         if ($this->stateSource !== null) {
-            $this->stateSource->save($this->stateIdentifier, $this->state);
+            $this->stateSource->save($this->stateGridIdentifier, $this->stateUserIdentifier, $this->state);
         }
 
         return new Grid($headers, $rows, $pagination);
@@ -151,12 +156,22 @@ class GridBuilder
     }
 
     /**
-     * @param string|int $stateIdentifier
+     * @param int|string $stateGridIdentifier
      * @return GridBuilder
      */
-    public function setStateIdentifier($stateIdentifier): GridBuilder
+    public function setStateGridIdentifier($stateGridIdentifier): GridBuilder
     {
-        $this->stateIdentifier = $stateIdentifier;
+        $this->stateGridIdentifier = $stateGridIdentifier;
+        return $this;
+    }
+
+    /**
+     * @param string|int $stateUserIdentifier
+     * @return GridBuilder
+     */
+    public function setStateUserIdentifier($stateUserIdentifier): GridBuilder
+    {
+        $this->stateUserIdentifier = $stateUserIdentifier;
         return $this;
     }
 
@@ -187,7 +202,7 @@ class GridBuilder
         if ($state !== null) {
             $this->state = $state;
         } else if ($this->stateSource !== null) {
-            $this->state = $this->stateSource->load($this->stateIdentifier);
+            $this->state = $this->stateSource->load($this->stateGridIdentifier, $this->stateUserIdentifier);
         } else {
             $this->state = new GridState();
         }

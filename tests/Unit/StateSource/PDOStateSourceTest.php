@@ -35,7 +35,8 @@ class PDOStateSourceTest extends AbstractTestCase
     {
         return [
             'id' => '1',
-            'identifier' => 'test',
+            'grid_identifier' => 'grid',
+            'user_identifier' => 'test',
             'sorted_by' => 'col',
             'sort_direction' => GridState::SORT_ASC,
             'current_page' => '2',
@@ -56,16 +57,32 @@ class PDOStateSourceTest extends AbstractTestCase
         self::$dbh->exec('TRUNCATE TABLE grid_state');
     }
 
-    public function testSaveAndLoad(): void
+    public function testInsertSaveAndLoad(): void
     {
         $source = new PDOStateSource(self::$dbh);
         $state = $this->getSampleState();
 
-        $source->save('test', $state);
+        $source->save('grid', 'test', $state);
 
         $sth = self::$dbh->query('SELECT * FROM grid_state');
 
         $this->assertEquals($this->getSampleStateAsArray(), $sth->fetch(\PDO::FETCH_ASSOC));
-        $this->assertEquals($state, $source->load('test'));
+        $this->assertEquals($state, $source->load('grid', 'test'));
+    }
+
+    public function testUpdateSave(): void
+    {
+        $source = new PDOStateSource(self::$dbh);
+        $state = $this->getSampleState();
+
+        $source->save('grid', 'test', $state);
+
+        $state
+            ->setCurrentPage(2)
+            ->setFilter(1, 'new filter1');
+
+        $source->save('grid', 'test', $state);
+
+        $this->assertEquals($state, $source->load('grid', 'test'));
     }
 }
