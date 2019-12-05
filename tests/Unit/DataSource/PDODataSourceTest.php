@@ -10,6 +10,7 @@ use Percas\Grid\DataFilter;
 use Percas\Grid\DataSource\PDODataSource;
 use Percas\Grid\GridState;
 use Percas\Grid\Tests\Unit\AbstractTestCase;
+use Percas\Grid\Tests\Util\DatabaseUtils;
 use Percas\Grid\Tests\Util\TestUtils;
 
 class PDODataSourceTest extends AbstractTestCase
@@ -26,9 +27,7 @@ class PDODataSourceTest extends AbstractTestCase
 
     public static function setUpBeforeClass(): void
     {
-        //TODO: Change it to localhost?
-        self::$dbh = new \PDO('mysql:host=192.168.1.137:3307;dbname=percas_grid', 'root', 'root');
-        self::$dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        self::$dbh = DatabaseUtils::setUpDatabase();
     }
 
     public static function tearDownAfterClass(): void

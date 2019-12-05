@@ -9,6 +9,7 @@ namespace Percas\Grid\Tests\Unit\StateSource;
 use Percas\Grid\GridState;
 use Percas\Grid\StateSource\PDOStateSource;
 use Percas\Grid\Tests\Unit\AbstractTestCase;
+use Percas\Grid\Tests\Util\DatabaseUtils;
 
 class PDOStateSourceTest extends AbstractTestCase
 {
@@ -51,10 +52,7 @@ class PDOStateSourceTest extends AbstractTestCase
 
     public static function setUpBeforeClass(): void
     {
-        //TODO: Change it to localhost?
-        self::$dbh = new \PDO('mysql:host=192.168.1.137:3307;dbname=percas_grid', 'root', 'root');
-        self::$dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        self::$dbh->exec('TRUNCATE TABLE grid_state');
+        self::$dbh = DatabaseUtils::setUpDatabase();
     }
 
     public function testInsertSaveAndLoad(): void

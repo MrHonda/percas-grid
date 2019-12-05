@@ -7,7 +7,6 @@ namespace Percas\Grid\Tests\Unit;
 
 
 use Percas\Grid\DataSource\DataSourceInterface;
-use Percas\Grid\DataSource\PDODataSource;
 use Percas\Grid\DisplayColumn;
 use Percas\Grid\Exception\KeyNotFoundException;
 use Percas\Grid\Grid;
@@ -89,16 +88,22 @@ class GridBuilderTest extends AbstractTestCase
             ->setSortedBy('id')
             ->setSortDirection('desc');
 
-        $dbh = new \PDO('mysql:host=192.168.1.137:3307;dbname=percas_grid', 'root', 'root');
-        $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
         $stateReader = \Mockery::mock(StateReaderInterface::class);
         $stateReader->shouldReceive('read')->andReturn($state);
 
-        $builder = new GridBuilder(new PDODataSource($dbh, 'grid1'));
+        $returnData = [
+            ['id' => 2],
+            ['id' => 1],
+        ];
+
+        $dataSource = \Mockery::mock(DataSourceInterface::class);
+        $dataSource->shouldReceive('getData')->with(['id'], [], $state)->andReturns($returnData)->once();
+        $dataSource->shouldReceive('getDataCount')->andReturns(2)->once();
+
+        $builder = new GridBuilder($dataSource);
         $builder->setStateReader($stateReader);
 
-        $builder->addTextColumn('id', 'id');
+        $builder->addTextColumn('id', 'id')->setFilterable(false);
 
         $grid = $builder->build();
 
@@ -116,13 +121,25 @@ class GridBuilderTest extends AbstractTestCase
         $state
             ->setFilter(1, 'val 1');
 
-        $dbh = new \PDO('mysql:host=192.168.1.137:3307;dbname=percas_grid', 'root', 'root');
-        $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
         $stateReader = \Mockery::mock(StateReaderInterface::class);
         $stateReader->shouldReceive('read')->andReturn($state);
 
-        $builder = new GridBuilder(new PDODataSource($dbh, 'grid1'));
+        $returnData = [
+            ['value1' => 'val 1'],
+        ];
+
+        //Because of internal incrementing of the index in DataFilter class, you can't use "with" method
+        $dataSource = \Mockery::mock(DataSourceInterface::class);
+        $dataSource
+            ->shouldReceive('getData')
+            ->andReturns($returnData)
+            ->once();
+        $dataSource
+            ->shouldReceive('getDataCount')
+            ->andReturns(1)
+            ->once();
+
+        $builder = new GridBuilder($dataSource);
         $builder->setStateReader($stateReader);
 
         $builder->addTextColumn('value1', 'value1');
