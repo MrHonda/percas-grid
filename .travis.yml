@@ -4,3 +4,15 @@ php:
   - '7.3'
 install:
   - composer install
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  name: ${TRAVIS_TAG}
+  skip_cleanup: true
+  draft: true
+  on:
+    tags: true
+
+notifications:
+  email: false
