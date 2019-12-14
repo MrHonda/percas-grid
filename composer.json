@@ -25,14 +25,11 @@
     "phpmd/phpmd": "^2.7",
     "phpstan/phpstan": "^0.11.19",
     "phpunit/phpunit": "^8.4",
-    "symplify/easy-coding-standard": "^6.1",
-    "ext-json": "*"
+    "symplify/easy-coding-standard": "^6.1"
   },
   "config": {
     "sort-packages": true
   },
-  "prefer-stable": true,
-  "minimum-stability": "dev",
   "scripts": {
     "phpstan": "vendor\\bin\\phpstan analyse src --level 7",
     "ecs": "vendor\\bin\\ecs check src tests --fix"
