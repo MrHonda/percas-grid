@@ -39,7 +39,7 @@ class JsonRenderer implements RendererInterface
 
     /**
      * @param Header[] $headers
-     * @return array
+     * @return mixed[]
      */
     private function parseHeaders(array $headers): array
     {
@@ -62,7 +62,7 @@ class JsonRenderer implements RendererInterface
 
     /**
      * @param Row[] $rows
-     * @return array
+     * @return mixed[]
      */
     private function parseRows(array $rows): array
     {
@@ -82,7 +82,7 @@ class JsonRenderer implements RendererInterface
 
     /**
      * @param Pagination $pagination
-     * @return array
+     * @return mixed[]
      */
     private function parsePagination(Pagination $pagination): array
     {
@@ -97,7 +97,7 @@ class JsonRenderer implements RendererInterface
 
     /**
      * @param mixed $normalized
-     * @return array
+     * @return mixed[]
      */
     private function validateNormalizedValue($normalized): array
     {

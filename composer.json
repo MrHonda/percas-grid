@@ -23,7 +23,7 @@
   "require-dev": {
     "mockery/mockery": "^1.2",
     "phpmd/phpmd": "^2.7",
-    "phpstan/phpstan": "^0.11.19",
+    "phpstan/phpstan": "^0.12",
     "phpunit/phpunit": "^8.4",
     "symplify/easy-coding-standard": "^6.1"
   },

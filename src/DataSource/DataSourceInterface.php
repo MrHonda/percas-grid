@@ -14,12 +14,12 @@ interface DataSourceInterface
      * @param string[] $columns
      * @param DataFilter[] $filters
      * @param GridState $state
-     * @return array
+     * @return mixed[]
      */
     public function getData(array $columns, array $filters, GridState $state): array;
 
     /**
-     * @param array $filters
+     * @param DataFilter[] $filters
      * @param GridState $state
      * @return int
      */

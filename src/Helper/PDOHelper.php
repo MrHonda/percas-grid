@@ -16,7 +16,7 @@ class PDOHelper
     }
 
     /**
-     * @param array $errorInfo
+     * @param mixed[] $errorInfo
      * @return string
      */
     public static function getErrorMessage(array $errorInfo): string
