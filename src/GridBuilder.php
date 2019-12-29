@@ -296,12 +296,10 @@ class GridBuilder
 
     /**
      * @param ColumnInterface $column
-     * @return ColumnInterface
      */
-    public function addColumn(ColumnInterface $column): ColumnInterface
+    public function addColumn(ColumnInterface $column): void
     {
         $this->columns[] = $column;
-        return $column;
     }
 
     /**
@@ -312,7 +310,7 @@ class GridBuilder
     public function addTextColumn(string $key, string $name): TextColumn
     {
         $column = new TextColumn($key, $name);
-        $this->columns[] = $column;
+        $this->addColumn($column);
 
         return $column;
     }
